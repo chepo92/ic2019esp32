@@ -1,9 +1,9 @@
-*****************************************************
+/*****************************************************
 * Decawave DWM1001 to MQTT via ESP32
-*****************************************************
+*****************************************************/
 
 #include <WiFi.h>
-#include <PubSubClient.h>
+#include <PubSubClient.h>    // https://github.com/knolleary/pubsubclient
 #include <HardwareSerial.h>
 
 // Connection settings for the WiFi
@@ -107,8 +107,6 @@ void reconnect() {
 }
 
 void setup() {
-  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
-
   Serial.begin(115200);
   SerialRTLS.begin(115200); // Open serial for RTLS connection
 
