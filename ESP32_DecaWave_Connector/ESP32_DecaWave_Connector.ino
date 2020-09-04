@@ -5,16 +5,22 @@
 #include <WiFi.h>
 #include <PubSubClient.h>    // https://github.com/knolleary/pubsubclient
 #include <HardwareSerial.h>
+#include "credentials.h"
 
-// Connection settings for the WiFi
-const char* ssid = "Your WiFi's SSID";
-const char* password = "Your WiFiPassword goes here";
+//// Connection settings for the WiFi
+//const char* ssid = "wireless";
+//const char* password = "Your WiFiPassword goes here";
 
 // Create the client for WiFi
 WiFiClient espClient;
 
 // Connection settings to the MQTT Broker
-const char* mqtt_server = "MQTT URL or IP Address";
+const char* mqtt_server = "192.168.1.20";
+const uint16_t mqtt_port = 1885;
+
+const char* mqtt_user = "dwmuser";
+const char* mqtt_pass = "dwmpass";
+
 // Create the MQTT Client
 PubSubClient client(espClient);
 
@@ -85,10 +91,14 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Create a random client ID
-    String clientId = "ESP32Client-";
-    clientId += String(random(0xffff), HEX);
+    char espMAC[23];
+    uint64_t chipid = ESP.getEfuseMac();
+    uint16_t chip = (uint16_t)(chipid >> 32);
+    snprintf(espMAC, 23, "ESP32-%04X%08X", chip, (uint32_t)chipid); 
+    String clientId = String (espMAC);    
+    //clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass )) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish("rtls/ESP32Status", "Connected to MQTT Server.");
@@ -110,11 +120,11 @@ void setup() {
   Serial.begin(115200);
   SerialRTLS.begin(115200); // Open serial for RTLS connection
 
-  randomSeed(analogRead(0));
+  //randomSeed(analogRead(0));
   
   setup_wifi();
   setup_gateway();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 }
 
