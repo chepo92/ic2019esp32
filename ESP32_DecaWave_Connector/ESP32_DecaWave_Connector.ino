@@ -8,7 +8,7 @@
 #include "credentials.h"
 
 //// Connection settings for the WiFi
-//const char* ssid = "wireless";
+//const char* ssid = "Wifi SSID";
 //const char* password = "Your WiFiPassword goes here";
 
 // Create the client for WiFi
